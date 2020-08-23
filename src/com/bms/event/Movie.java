@@ -1,7 +1,5 @@
 package com.bms.event;
 
-import com.bms.event.Event;
-import com.bms.event.Genre;
 
 import java.util.List;
 import java.util.stream.Collectors;

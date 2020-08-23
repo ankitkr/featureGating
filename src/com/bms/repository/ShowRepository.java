@@ -28,6 +28,7 @@ public class ShowRepository {
             return availableShows;
         }
 
+        //ideally should be done during initialization
         availableShows.add(new Show(movie, 350, 1, 10, 1310, 1450));
         availableShows.add(new Show(movie, 400,2, 30, 1410, 1550));
         availableShows.add(new Show(movie, 250, 1, 10, 910, 1050));

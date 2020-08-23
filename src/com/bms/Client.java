@@ -4,6 +4,7 @@ import com.bms.event.Event;
 import com.bms.inventory.Booking;
 import com.bms.inventory.SeatBooking;
 import com.bms.inventory.Show;
+import com.bms.inventory.exception.BookingAlreadyCancelledException;
 import com.bms.inventory.exception.SeatUnavailable;
 import com.bms.payment.PaymentGateway;
 import com.bms.payment.exception.PaymentFailedException;
@@ -97,7 +98,12 @@ public class Client {
             System.out.println(exception.toString());
         }
 
-        seatBooking.cancelBooking(currentBooking2);
+        try {
+            seatBooking.cancelBooking(currentBooking2);
+            System.out.println("Booking cancelled successfully!!");
+        } catch (BookingAlreadyCancelledException ex) {
+            System.out.println("Booking has already been cancelled!!");
+        }
 
         try {
             currentUser = userRepository.getUser(3);
