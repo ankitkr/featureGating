@@ -1,10 +1,14 @@
 package com.showbooking.events;
 
+import com.showbooking.bookings.exception.SeatUnavailableException;
 import com.showbooking.events.exception.InvalidShowTimingException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Show {
     Long id;
@@ -13,6 +17,7 @@ public class Show {
     Integer timing;
     Integer price;
     List<Long> bookedSeats;
+    Map<Long, ReentrantLock> lockObjects;
 
     Show(Event event, Screen screen, Integer timing, Integer price) throws InvalidShowTimingException {
         if(timing < 0 ||timing > 23) {
@@ -26,6 +31,7 @@ public class Show {
         this.screenId = screen.getId();
         this.timing = timing;
         this.price = price;
+        this.lockObjects = new ConcurrentHashMap<>();
     }
 
     public Long getId() {
@@ -68,17 +74,36 @@ public class Show {
         return seatingLayout;
     }
 
-    public synchronized Boolean bookSeats(List<Long> seatIds) {
-        for(Long seatId: seatIds) {
-            if(this.bookedSeats.contains(seatId))
-                return false;
-        }
+    public void bookSeats(List<Long> seatIds) throws SeatUnavailableException{
+        List<ReentrantLock> locks = new ArrayList<>();
+        try {
+            for (Long seatId : seatIds) {
+                ReentrantLock lock = lockObjects.computeIfAbsent(seatId, k -> new ReentrantLock());
+                if (lock.tryLock()) {
+                    locks.add(lock);
+                } else {
+                    throw new SeatUnavailableException();
+                }
+            }
 
-        this.bookedSeats.addAll(seatIds);
-        return true;
+            for (Long seatId : seatIds) {
+                if(this.bookedSeats.contains(seatId))
+                    throw new SeatUnavailableException();
+            }
+            this.bookedSeats.addAll(seatIds);
+        } finally {
+            for(ReentrantLock lock: locks) {
+                lock.unlock();
+            }
+        }
     }
 
     public void unBookSeats(List<Long> seatIds) {
         this.bookedSeats.removeAll(seatIds);
+    }
+
+    @Override
+    public String toString() {
+        return "Id: " + id + ", eventId: " + eventId + ", screenId: " + screenId +", bookedSeats: " + bookedSeats;
     }
 }

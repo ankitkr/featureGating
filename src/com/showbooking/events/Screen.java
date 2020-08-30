@@ -35,5 +35,8 @@ public class Screen {
         return this.seatingLayout;
     }
 
-
+    @Override
+    public String toString() {
+        return "Id: " + id + ", total seats: " + totalSeats;
+    }
 }

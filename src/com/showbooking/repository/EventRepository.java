@@ -68,18 +68,14 @@ public class EventRepository {
     }
 
     public Show addShow(Show show) {
-        List<Show> eventShows = showStore.get(show.getEventId());
-        if(eventShows == null) {
-            eventShows = new ArrayList<>();
-        }
-
+        List<Show> eventShows = showStore.getOrDefault(show.getEventId(), new ArrayList<>());
         eventShows.add(show);
         showStore.put(show.getEventId(), eventShows);
         return show;
     }
 
     public void removeShows(Event event, Screen screen) {
-        List<Show> eventShows = showStore.get(event.getEventId());
+        List<Show> eventShows = showStore.getOrDefault(event.getEventId(), new ArrayList<>());
         eventShows.removeIf(show -> show.getScreenId().equals(screen.getId()));
     }
 }

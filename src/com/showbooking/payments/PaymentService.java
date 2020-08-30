@@ -22,7 +22,7 @@ public class PaymentService implements Payable {
             return new Payment(rand.nextLong(), userId, amount, PaymentStatus.SUCCESS);
         }
 
-        System.out.println("User " + userId + ", payment of Rs. " + amount + "failed");
+        System.out.println("User " + userId + ", payment of Rs. " + amount + " failed");
         throw new PaymentFailedException();
     }
 

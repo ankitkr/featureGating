@@ -8,13 +8,13 @@ public class FilterService {
         List<Event> result = new ArrayList<Event>(events);
 
         if(filter.getTitle() != null) {
-            result.removeIf(event -> event.getEventTitle().equalsIgnoreCase(filter.getTitle()));
+            result.removeIf(event -> !event.getEventTitle().equalsIgnoreCase(filter.getTitle()));
         }
         if(filter.getGenre() != null) {
-            result.removeIf(event -> event.getEventGenre().equalsIgnoreCase(filter.getGenre()));
+            result.removeIf(event -> !event.getEventGenre().equalsIgnoreCase(filter.getGenre()));
         }
         if(filter.getLanguage() != null) {
-            result.removeIf(event -> event.getEventLanguage().equalsIgnoreCase(filter.getLanguage()));
+            result.removeIf(event -> !event.getEventLanguage().equalsIgnoreCase(filter.getLanguage()));
         }
 
         return result;

@@ -47,4 +47,9 @@ public class Movie implements Event {
     public String getEventLanguage() {
         return this.language;
     }
+
+    @Override
+    public String toString() {
+        return "Id: " + id + ", Title: " + title + ", Genre: " + genre +", Language: " + language;
+    }
 }

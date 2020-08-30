@@ -1,5 +1,6 @@
 package com.showbooking.bookings;
 
+import com.showbooking.bookings.exception.SeatUnavailableException;
 import com.showbooking.payments.Payable;
 import com.showbooking.events.Show;
 import com.showbooking.payments.Payment;
@@ -19,11 +20,10 @@ public class BookingService {
         List<Show> availableShows = eventRepository.fetchAllShows(eventId).stream().filter(
                 show -> show.getScreenId().equals(screenId)).collect(Collectors.toList());
         Show selectedShow = Collections.min(availableShows, Comparator.comparing(Show::getId));
-        try {
-            if (!selectedShow.bookSeats(seatIds)) {
-                return null;
-            }
 
+        Collections.sort(seatIds);
+        try {
+            selectedShow.bookSeats(seatIds);
             Payment payment = paymentService.makePayment(userId, selectedShow.getPrice());
             if(payment.getStatus().equals(PaymentStatus.SUCCESS)) {
                 Booking booking = bookingRepository.addBooking(new Booking(userId, selectedShow, payment, seatIds));
@@ -31,6 +31,9 @@ public class BookingService {
             } else {
                 throw new PaymentFailedException();
             }
+        } catch (SeatUnavailableException exc) {
+            System.out.println("Selected seat no longer available.");
+            return null;
         } catch (PaymentFailedException exc) {
             selectedShow.unBookSeats(seatIds);
             return null;
