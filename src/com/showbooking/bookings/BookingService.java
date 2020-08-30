@@ -40,15 +40,24 @@ public class BookingService {
 
     public static Boolean cancelBooking(Payable paymentService, BookingRepository bookingRepository, Long bookingId) {
         Booking booking = bookingRepository.fetchBooking(bookingId);
+        if(!booking.getIsActive()) {
+            return false;
+        }
+
         List<Long> bookedSeats = booking.getSeatIds();
         Show bookedShow = booking.getShow();
-        if (booking.getIsActive()) {
-            paymentService.refundPayment(booking.getPayment());
-            bookedShow.unBookSeats(bookedSeats);
-            booking.setIsActiveFalse();
-            return true;
+        booking.getLock().lock();
+        try {
+            if (booking.getIsActive()) {
+                paymentService.refundPayment(booking.getPayment());
+                bookedShow.unBookSeats(bookedSeats);
+                booking.setIsActiveFalse();
+                return true;
+            }
+            return false;
+        } finally {
+            booking.getLock().unlock();
         }
-        return false;
     }
 
     public static Booking fetchBooking(BookingRepository bookingRepository, long bookingId) {

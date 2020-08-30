@@ -6,6 +6,8 @@ import com.showbooking.payments.Payment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Booking {
     Show show;
@@ -15,6 +17,7 @@ public class Booking {
     Long userId;
     Boolean isActive;
     List<Long> seatIds;
+    private final Lock lock = new ReentrantLock();
 
     Booking(Long userId, Show show, Payment payment, List<Long> bookedSeatIds) {
         Random rand = new Random();
@@ -29,6 +32,10 @@ public class Booking {
 
     public Long getId(){
         return this.id;
+    }
+
+    public Lock getLock() {
+        return this.lock;
     }
 
     public Boolean getIsActive(){
