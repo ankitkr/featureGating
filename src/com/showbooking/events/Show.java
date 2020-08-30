@@ -68,7 +68,7 @@ public class Show {
         return seatingLayout;
     }
 
-    public Boolean bookSeats(List<Long> seatIds) {
+    public synchronized Boolean bookSeats(List<Long> seatIds) {
         for(Long seatId: seatIds) {
             if(this.bookedSeats.contains(seatId))
                 return false;

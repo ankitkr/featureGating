@@ -19,7 +19,6 @@ public class BookingService {
         List<Show> availableShows = eventRepository.fetchAllShows(eventId).stream().filter(
                 show -> show.getScreenId().equals(screenId)).collect(Collectors.toList());
         Show selectedShow = Collections.min(availableShows, Comparator.comparing(Show::getId));
-
         try {
             if (!selectedShow.bookSeats(seatIds)) {
                 return null;
